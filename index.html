@@ -3,11 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Venus Wires | Sales Order Costing</title>
+    <title>CostFlow | Sales Order Costing</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <!-- SheetJS for clean tabular Excel (.xlsx) downloads -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
       :root {
@@ -539,7 +538,6 @@
         margin-bottom: 16px;
       }
 
-      /* Modal Table */
       dialog {
         margin: auto;
         background: var(--surface);
@@ -608,42 +606,23 @@
       .table-wrap td {
         font-family: var(--font-mono);
       }
-
-      .product-layout {
-        display: grid;
-        grid-template-columns: 360px 1fr;
-        gap: 24px;
-        margin-top: 20px;
-      }
-
-      .product-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 14px 18px;
-        border-bottom: 1px solid var(--border);
-      }
-
-      .product-item:last-child {
-        border-bottom: none;
-      }
     </style>
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
         <a class="brand" href="#costing" aria-label="CostFlow home">
-          <span class="brand-mark">V</span>
-          <span>Venus Wires</span>
+          <span class="brand-mark">C</span>
+          <span>CostFlow</span>
         </a>
         <nav>
           <button class="nav-link active" data-view="costing"><span>▦</span> Sales Costing</button>
-          <button class="nav-link" data-view="products"><span>◇</span> Product Master</button>
+          
           <button class="nav-link" data-view="orders"><span>≡</span> Saved Costings</button>
         </nav>
         <div class="sidebar-note">
           <span class="status-dot"></span>
-          <div><strong>Workspace Ready</strong><small id="fx-status">Connecting FX rates...</small></div>
+          <div><strong>Workspace Ready</strong><small id="fx-status">Connecting live FX...</small></div>
         </div>
       </aside>
 
@@ -662,11 +641,10 @@
         <!-- COSTING VIEW -->
         <section class="view active" id="costing-view">
           <div class="notice">
-            <span>✦</span> <strong>Dynamic Formula:</strong> FX Rate = Market - 3 | Tariff = [((Total Price - Freight)/1.5) × Tariff%] | Conversion = Total Price - Freight - Duty - Tariff - Other Costs - Commission - Raw Material
+            <span>✦</span> <strong>Active Rules:</strong>  Line Item in multiples of 10 |  Total Price = Price + Surcharge | Duty = Duty / 100 | Commission = Flat Value | 
           </div>
           
           <div class="costing-container">
-            <!-- TOP SPLIT: ORDER & FREIGHT ALLOCATION -->
             <div class="header-panels-grid">
               <section class="panel">
                 <div class="panel-heading">
@@ -684,7 +662,7 @@
               <section class="panel freight-panel">
                 <div class="panel-heading">
                   <div><p class="section-kicker">02</p><h2>Freight Allocation</h2></div>
-                  <span class="chip">Auto-allocator</span>
+                  <span class="chip">Cost per kg</span>
                 </div>
                 <div class="field-grid freight-fields">
                   <label>Total Order Qty (kg)*<input id="orderQuantity" type="number" min="0" step="0.01" value="" placeholder="0.00" /></label>
@@ -723,6 +701,7 @@
                   <thead>
                     <tr>
                       <th class="sticky-col">#</th>
+                      <th style="min-width: 100px;">Line Item</th>
                       <th style="min-width: 150px;">Product</th>
                       <th style="min-width: 100px;">Grade</th>
                       <th style="min-width: 90px;">Size</th>
@@ -738,16 +717,16 @@
                       <th style="min-width: 100px;">Tariff (%)</th>
                       <th style="min-width: 120px;">Freight (INR)</th>
                       <th style="min-width: 110px;">Other Costs</th>
-                      <th style="min-width: 110px;">Other Duties (%)</th>
+                      <th style="min-width: 110px;">Other Duties</th>
                       <th style="min-width: 120px;">Raw Material</th>
-                      <th style="min-width: 110px;">Commission (%)</th>
+                      <th style="min-width: 110px;">Commission</th>
                       <th style="min-width: 140px;">Currency Conversion</th>
                       <th style="min-width: 130px;">Conversion</th>
                       <th style="min-width: 60px;">Action</th>
                     </tr>
                   </thead>
                   <tbody id="line-items-body">
-                    <!-- Dynamic Rows Render Here -->
+                    <!-- Dynamic Rows -->
                   </tbody>
                 </table>
               </div>
@@ -800,62 +779,7 @@
           </div>
         </section>
 
-        <!-- PRODUCT MASTER VIEW -->
-        <section class="view" id="products-view">
-          <div class="section-title-row">
-            <div><p class="eyebrow">PRODUCT MASTER</p><h2>Standard Catalog Rates</h2></div>
-            <button class="button button-primary" id="new-product">+ New Product</button>
-          </div>
-          <div class="product-layout">
-            <section class="panel product-form-panel">
-              <div class="panel-heading">
-                <div><p class="section-kicker">CATALOG ENTRY</p><h2 id="product-form-title">Add Standard Item</h2></div>
-              </div>
-              <form id="product-form" class="field-grid">
-                <label>Product Name*
-                  <select id="product-name" required>
-                    <option value="SS Wire">SS Wire</option>
-                    <option value="SS Bars">SS Bars</option>
-                    <option value="Nickel Alloys">Nickel Alloys</option>
-                    <option value="Carbon Alloys">Carbon Alloys</option>
-                    <option value="Shaft">Shaft</option>
-                  </select>
-                </label>
-                <label>Grade<input id="product-grade" placeholder="e.g. 304, 316L" value="" /></label>
-                <label>Default UOM
-                  <select id="product-uom">
-                    <option value="Kg">Kg</option>
-                    <option value="Ton">Ton</option>
-                    <option value="Lbs">Lbs</option>
-                    <option value="Piece">Piece</option>
-                  </select>
-                </label>
-                <label>Raw Material Rate (₹)<input id="product-raw-rate" type="number" min="0" step="0.01" value="" placeholder="0.00" /></label>
-                <label>Conversion Rate (₹)<input id="product-conversion-rate" type="number" min="0" step="0.01" value="" placeholder="0.00" /></label>
-                <label>Commission Rate (%)<input id="product-commission-rate" type="number" min="0" step="0.01" value="" placeholder="0.00" /></label>
-                <label>Default Incoterm
-                  <select id="product-incoterm">
-                    <option value="DDP">DDP</option>
-                    <option value="CIF">CIF</option>
-                    <option value="DAP">DAP</option>
-                    <option value="FOB">FOB</option>
-                  </select>
-                </label>
-                <label>Default Tariff (%)<input id="product-tariff" type="number" min="0" step="0.01" value="" placeholder="0.00" /></label>
-                <div class="form-actions" style="grid-column: span 2; display: flex; gap: 10px; margin-top: 10px;">
-                  <button class="button button-primary" type="submit">Save to Master</button>
-                  <button class="button button-quiet" type="button" id="cancel-product">Cancel</button>
-                </div>
-              </form>
-            </section>
-            <section class="panel">
-              <div class="panel-heading">
-                <div><p class="section-kicker">STORED CATALOG</p><h2 id="product-count">0 Products</h2></div>
-              </div>
-              <div id="product-list" class="product-list"></div>
-            </section>
-          </div>
-        </section>
+       
 
         <!-- SAVED COSTINGS VIEW -->
         <section class="view" id="orders-view">
@@ -869,7 +793,7 @@
       </main>
     </div>
 
-    <!-- EXCEL MODAL -->
+    <!-- EXCEL PREVIEW MODAL -->
     <dialog id="upload-modal">
       <div class="modal-header">
         <div>
@@ -885,8 +809,9 @@
         <table id="preview-excel-table">
           <thead>
             <tr>
-              <th>Sales Order</th>
               <th>Line Item</th>
+              <th>Sales Order</th>
+              <th>Product Name</th>
               <th>Raw Material</th>
               <th>Conversion</th>
               <th>Freight</th>
@@ -895,7 +820,6 @@
               <th>Duty/Tariff</th>
               <th>CURRENCY</th>
               <th>REMARKS</th>
-              <th>CONV</th>
             </tr>
           </thead>
           <tbody id="upload-body"></tbody>
@@ -906,12 +830,12 @@
     <div id="toast" role="status"></div>
 
     <script>
-      // Base FX storage
+      // Updated realistic market baselines (~95.50 for USD)
       const fxRatesToINR = {
-        USD: 84.00,
-        EUR: 91.50,
-        GBP: 107.00,
-        CAD: 61.50,
+        USD: 95.52,
+        EUR: 109.57,
+        GBP: 127.72,
+        CAD: 69.80,
         INR: 1.00
       };
 
@@ -926,29 +850,72 @@
       const INCOTERM_OPTIONS = ['DDP', 'CIF', 'DAP', 'FOB'];
       const CURRENCY_OPTIONS = ['USD', 'EUR', 'GBP', 'CAD', 'INR'];
 
+      function enforceMaxDate() {
+        const poDateInput = document.getElementById('poDate');
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        poDateInput.max = `${year}-${month}-${day}`;
+      }
+
+      function getUomMultiplier(uom) {
+        if (uom === 'Ton') return 1000;
+        if (uom === 'Lbs') return 0.45359237;
+        return 1;
+      }
+
+      // Robust live FX fetcher with secondary fallback
       async function fetchLiveRates() {
         const statusEl = document.getElementById('fx-status');
+        let fetched = false;
+
+        // Primary API: open.er-api.com
         try {
           const res = await fetch('https://open.er-api.com/v6/latest/USD');
           if (res.ok) {
             const data = await res.json();
-            const inrPerUsd = data.rates['INR'] || 84;
-            fxRatesToINR.USD = inrPerUsd;
-            fxRatesToINR.EUR = inrPerUsd / (data.rates['EUR'] || 0.92);
-            fxRatesToINR.GBP = inrPerUsd / (data.rates['GBP'] || 0.78);
-            fxRatesToINR.CAD = inrPerUsd / (data.rates['CAD'] || 1.37);
-            fxRatesToINR.INR = 1;
-            statusEl.textContent = 'FX Connected (Live rates)';
-          } else {
-            statusEl.textContent = 'Default FX active';
+            if (data && data.rates && data.rates['INR']) {
+              const inrPerUsd = data.rates['INR'];
+              fxRatesToINR.USD = inrPerUsd;
+              fxRatesToINR.EUR = inrPerUsd / (data.rates['EUR'] || 0.87);
+              fxRatesToINR.GBP = inrPerUsd / (data.rates['GBP'] || 0.75);
+              fxRatesToINR.CAD = inrPerUsd / (data.rates['CAD'] || 1.36);
+              fxRatesToINR.INR = 1;
+              statusEl.textContent = `FX Live (USD: ₹${inrPerUsd.toFixed(2)})`;
+              fetched = true;
+            }
           }
-        } catch (e) {
-          statusEl.textContent = 'Default FX active';
+        } catch (e) {}
+
+        // Secondary fallback API if primary fails
+        if (!fetched) {
+          try {
+            const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.rates && data.rates['INR']) {
+                const inrPerUsd = data.rates['INR'];
+                fxRatesToINR.USD = inrPerUsd;
+                fxRatesToINR.EUR = inrPerUsd / (data.rates['EUR'] || 0.87);
+                fxRatesToINR.GBP = inrPerUsd / (data.rates['GBP'] || 0.75);
+                fxRatesToINR.CAD = inrPerUsd / (data.rates['CAD'] || 1.36);
+                fxRatesToINR.INR = 1;
+                statusEl.textContent = `FX Live (USD: ₹${inrPerUsd.toFixed(2)})`;
+                fetched = true;
+              }
+            }
+          } catch (e) {}
+        }
+
+        if (!fetched) {
+          statusEl.textContent = `Market Baseline (USD: ₹${fxRatesToINR.USD.toFixed(2)})`;
         }
 
         const freightCur = document.getElementById('freightCurrency').value;
-        document.getElementById('freightFx').value = (fxRatesToINR[freightCur] || 84).toFixed(2);
+        document.getElementById('freightFx').value = (fxRatesToINR[freightCur] || 95.52).toFixed(2);
         calculateFreightPerKg();
+        recalcAllLines();
       }
 
       const lineItemsBody = document.getElementById('line-items-body');
@@ -989,9 +956,14 @@
         const baseRate = fxRatesToINR[line.currency] || 1;
         line.currencyConversion = line.currency === 'INR' ? 1 : Math.max(0, baseRate - 3);
 
-        const itemTotalPriceForeign = (parseFloat(line.price) || 0) + (parseFloat(line.surcharge) || 0);
-        line.totalPriceForeign = itemTotalPriceForeign;
-        const totalPriceINR = itemTotalPriceForeign * line.currencyConversion;
+        const priceVal = parseFloat(line.price) || 0;
+        const surchargeVal = parseFloat(line.surcharge) || 0;
+        line.totalPriceForeign = priceVal + surchargeVal;
+        const totalPriceINR = line.totalPriceForeign * line.currencyConversion;
+
+        const multiplier = getUomMultiplier(line.uom);
+        const qtyRaw = parseFloat(line.quantity) || 0;
+        line.qtyKg = qtyRaw * multiplier;
 
         let calcTariff = 0;
         if (line.incoterm !== 'DAP') {
@@ -1002,23 +974,29 @@
 
         let calcDuty = 0;
         if (!['FOB', 'DAP', 'CIF'].includes(line.incoterm)) {
-          calcDuty = ((parseFloat(line.otherDuties) || 0) / 100) * (parseFloat(line.rawMaterial) || 0);
+          calcDuty = (parseFloat(line.otherDuties) || 0) / 100;
         }
         line.calculatedDutyINR = calcDuty;
 
-        const calcCommission = ((parseFloat(line.commission) || 0) / 100) * totalPriceINR;
-        line.calculatedCommissionINR = calcCommission;
+        line.calculatedCommissionINR = parseFloat(line.commission) || 0;
 
         const freight = parseFloat(line.freight) || 0;
         const otherCost = parseFloat(line.otherCosts) || 0;
         const rawMat = parseFloat(line.rawMaterial) || 0;
 
-        line.conversion = totalPriceINR - freight - calcDuty - calcTariff - otherCost - calcCommission - rawMat;
+        line.conversion = totalPriceINR - freight - calcDuty - calcTariff - otherCost - line.calculatedCommissionINR - rawMat;
       }
 
       function createNewLine() {
+        let nextLineItem = 10;
+        if (state.lines.length > 0) {
+          const lastNum = parseInt(state.lines[state.lines.length - 1].lineItemNum) || 0;
+          nextLineItem = lastNum + 10;
+        }
+
         const line = {
           id: 'line_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+          lineItemNum: nextLineItem,
           product: PRODUCT_OPTIONS[0],
           grade: '',
           size: '',
@@ -1070,6 +1048,9 @@
           tr.innerHTML = `
             <td>${index + 1}</td>
             <td>
+              <input type="number" step="10" min="10" data-field="lineItemNum" value="${line.lineItemNum}" placeholder="10" style="width: 80px;" title="Must be multiple of 10" />
+            </td>
+            <td>
               <select data-field="product">
                 ${PRODUCT_OPTIONS.map(p => `<option value="${p}" ${line.product === p ? 'selected' : ''}>${p}</option>`).join('')}
               </select>
@@ -1117,11 +1098,11 @@
             </td>
             <td><input type="number" step="0.01" data-field="otherCosts" value="${line.otherCosts}" placeholder="0.00" /></td>
             <td>
-              <input type="number" step="0.01" data-field="otherDuties" value="${line.otherDuties}" placeholder="0.00"
+              <input type="number" step="0.01" data-field="otherDuties" value="${line.otherDuties}" placeholder="duties / 100"
                 ${isFOB || isDAP || isCIF ? 'disabled class="is-disabled"' : ''} />
             </td>
             <td><input type="number" step="0.01" data-field="rawMaterial" value="${line.rawMaterial}" placeholder="0.00" /></td>
-            <td><input type="number" step="0.01" data-field="commission" value="${line.commission}" placeholder="%" /></td>
+            <td><input type="number" step="0.01" data-field="commission" value="${line.commission}" placeholder="Flat value" /></td>
             <td class="read-only-cell"><span class="fx-conv-val">₹${line.currencyConversion.toFixed(2)}</span></td>
             <td class="conversion-cell"><strong class="conversion-val">₹${line.conversion.toFixed(2)}</strong></td>
             <td><button class="delete-row-btn" title="Delete Row">&times;</button></td>
@@ -1145,6 +1126,12 @@
         const field = target.dataset.field;
         if (!field) return;
 
+        if (field === 'lineItemNum') {
+          let val = parseInt(target.value) || 0;
+          line.lineItemNum = val;
+          return;
+        }
+
         const isNumeric = ['quantity', 'price', 'surcharge', 'tariff', 'freight', 'otherCosts', 'otherDuties', 'rawMaterial', 'commission'].includes(field);
         line[field] = isNumeric ? (target.value === '' ? '' : parseFloat(target.value) || 0) : target.value;
 
@@ -1156,6 +1143,19 @@
 
         recalcSummaries();
       });
+
+      lineItemsBody.addEventListener('blur', (e) => {
+        if (e.target.dataset.field === 'lineItemNum') {
+          let val = parseInt(e.target.value) || 10;
+          if (val % 10 !== 0 || val <= 0) {
+            val = Math.max(10, Math.round(val / 10) * 10);
+            e.target.value = val;
+          }
+          const tr = e.target.closest('tr');
+          const line = state.lines.find(l => l.id === tr.dataset.id);
+          if (line) line.lineItemNum = val;
+        }
+      }, true);
 
       lineItemsBody.addEventListener('change', (e) => {
         const target = e.target;
@@ -1172,8 +1172,8 @@
           computeLineFinancials(line);
           renderLines();
           recalcSummaries();
-        } else if (target.dataset.field === 'currency') {
-          line.currency = target.value;
+        } else if (target.dataset.field === 'currency' || target.dataset.field === 'uom') {
+          line[target.dataset.field] = target.value;
           computeLineFinancials(line);
           renderLines();
           recalcSummaries();
@@ -1195,16 +1195,16 @@
         let totalConversion = 0;
         let totalFreight = 0;
         let totalTariff = 0;
-        let totalQty = 0;
+        let totalQtyKg = 0;
 
         state.lines.forEach((line) => {
-          const qty = parseFloat(line.quantity) || 0;
-          totalRaw += (parseFloat(line.rawMaterial) || 0) * qty;
-          totalConversion += (parseFloat(line.conversion) || 0) * qty;
-          totalFreight += (parseFloat(line.freight) || 0) * qty;
-          totalTariff += (parseFloat(line.calculatedTariffINR) || 0) * qty;
-          totalQty += qty;
-          totalLanded += (line.totalPriceForeign * line.currencyConversion) * qty;
+          const kg = line.qtyKg || 0;
+          totalRaw += (parseFloat(line.rawMaterial) || 0) * kg;
+          totalConversion += (parseFloat(line.conversion) || 0) * kg;
+          totalFreight += (parseFloat(line.freight) || 0) * kg;
+          totalTariff += (parseFloat(line.calculatedTariffINR) || 0) * kg;
+          totalQtyKg += kg;
+          totalLanded += (line.totalPriceForeign * line.currencyConversion) * kg;
         });
 
         document.getElementById('total-landed').textContent = `₹${totalLanded.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
@@ -1212,7 +1212,7 @@
         document.getElementById('summary-conversion').textContent = `₹${totalConversion.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
         document.getElementById('summary-freight').textContent = `₹${totalFreight.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
         document.getElementById('summary-tariff').textContent = `₹${totalTariff.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
-        document.getElementById('total-quantity').textContent = `${totalQty.toLocaleString()} kg Total`;
+        document.getElementById('total-quantity').textContent = `${totalQtyKg.toLocaleString('en-IN', { maximumFractionDigits: 2 })} kg Total`;
 
         const soNum = document.getElementById('salesOrder').value.trim();
         document.getElementById('summary-order').textContent = soNum || 'Draft Order';
@@ -1223,7 +1223,7 @@
       });
 
       document.getElementById('freightCurrency').addEventListener('change', (e) => {
-        const rate = fxRatesToINR[e.target.value] || 1;
+        const rate = fxRatesToINR[e.target.value] || 95.52;
         document.getElementById('freightFx').value = rate.toFixed(2);
         calculateFreightPerKg();
       });
@@ -1238,7 +1238,7 @@
 
         document.getElementById('orderQuantity').value = '';
         document.getElementById('freightCurrency').value = 'USD';
-        document.getElementById('freightFx').value = (fxRatesToINR['USD'] || 84).toFixed(2);
+        document.getElementById('freightFx').value = (fxRatesToINR['USD'] || 95.52).toFixed(2);
         document.getElementById('oceanFreight').value = '';
         document.getElementById('doorDelivery').value = '';
         state.freightCostPerKg = 0;
@@ -1255,7 +1255,7 @@
         }
       });
 
-      // Preview Excel Layout Modal (CONVERSION column removed, REMARKS blank)
+      // Preview Excel Layout Modal
       const modal = document.getElementById('upload-modal');
       document.getElementById('show-upload').addEventListener('click', () => {
         const uploadBody = document.getElementById('upload-body');
@@ -1264,24 +1264,22 @@
 
         state.lines.forEach((l) => {
           const tr = document.createElement('tr');
-          const lineItemText = `${l.product} (${l.grade || 'Std'} ${l.size || ''}) - ${l.quantity || 0} ${l.uom}`;
+          const lineItemNum = l.lineItemNum || 10;
+          const productDetail = `${l.product} (${l.grade || 'Std'} ${l.size || ''}) - ${l.quantity || 0} ${l.uom}`;
           const combinedDutyTariff = (l.calculatedDutyINR + l.calculatedTariffINR).toFixed(2);
-          const remarks = ''; // REMARKS kept blank as requested
-          const convStatus = l.conversion >= 0 ? 'Profitable' : 'Margin Deficit';
-          const convStatusColor = l.conversion >= 0 ? '#7ee787' : '#f85149';
 
           tr.innerHTML = `
+            <td>${lineItemNum}</td>
             <td>${soNum}</td>
-            <td>${lineItemText}</td>
+            <td>${productDetail}</td>
             <td>₹${(parseFloat(l.rawMaterial) || 0).toFixed(2)}</td>
             <td><strong>₹${l.conversion.toFixed(2)}</strong></td>
             <td>₹${(parseFloat(l.freight) || 0).toFixed(2)}</td>
             <td>₹${(parseFloat(l.otherCosts) || 0).toFixed(2)}</td>
-            <td>₹${l.calculatedCommissionINR.toFixed(2)} (${l.commission || 0}%)</td>
+            <td>₹${l.calculatedCommissionINR.toFixed(2)}</td>
             <td>₹${combinedDutyTariff}</td>
             <td>${l.currency}</td>
-            <td>${remarks}</td>
-            <td style="color: ${convStatusColor}; font-weight: 700;">${convStatus}</td>
+            <td>done</td>
           `;
           uploadBody.appendChild(tr);
         });
@@ -1290,15 +1288,15 @@
 
       document.getElementById('close-upload').addEventListener('click', () => modal.close());
 
-      // DOWNLOAD TABULAR EXCEL SPREADSHEET
+      // Download Tabular Excel (.xlsx)
       document.getElementById('download-excel-btn').addEventListener('click', () => {
         const soNum = document.getElementById('salesOrder').value.trim() || 'SO_Costing';
         
-        // Structured data matrix matching requested preview columns
         const excelRows = [
           [
-            'Sales Order',
             'Line Item',
+            'Sales Order',
+            'Product Name',
             'Raw Material',
             'Conversion',
             'Freight',
@@ -1306,19 +1304,19 @@
             'Commision',
             'Duty/Tariff',
             'CURRENCY',
-            'REMARKS',
-            'CONV'
+            'REMARKS'
           ]
         ];
 
         state.lines.forEach((l) => {
-          const lineItemText = `${l.product} (${l.grade || 'Std'} ${l.size || ''}) - ${l.quantity || 0} ${l.uom}`;
+          const lineItemNum = l.lineItemNum || 10;
+          const productDetail = `${l.product} (${l.grade || 'Std'} ${l.size || ''}) - ${l.quantity || 0} ${l.uom}`;
           const combinedDutyTariff = Number((l.calculatedDutyINR + l.calculatedTariffINR).toFixed(2));
-          const convStatus = l.conversion >= 0 ? 'Profitable' : 'Margin Deficit';
 
           excelRows.push([
+            lineItemNum,
             soNum,
-            lineItemText,
+            productDetail,
             Number((parseFloat(l.rawMaterial) || 0).toFixed(2)),
             Number(l.conversion.toFixed(2)),
             Number((parseFloat(l.freight) || 0).toFixed(2)),
@@ -1326,35 +1324,31 @@
             Number(l.calculatedCommissionINR.toFixed(2)),
             combinedDutyTariff,
             l.currency,
-            '', // REMARKS column kept blank
-            convStatus
+            'done'
           ]);
         });
 
-        // Use SheetJS if available
         if (window.XLSX) {
           const wb = XLSX.utils.book_new();
           const ws = XLSX.utils.aoa_to_sheet(excelRows);
 
-          // Set clean, readable column widths
           ws['!cols'] = [
-            { wch: 16 }, // Sales Order
-            { wch: 32 }, // Line Item
-            { wch: 14 }, // Raw Material
-            { wch: 14 }, // Conversion
-            { wch: 12 }, // Freight
-            { wch: 12 }, // Other Cost
-            { wch: 14 }, // Commision
-            { wch: 14 }, // Duty/Tariff
-            { wch: 10 }, // CURRENCY
-            { wch: 16 }, // REMARKS (blank)
-            { wch: 16 }  // CONV
+            { wch: 12 },
+            { wch: 16 },
+            { wch: 34 },
+            { wch: 14 },
+            { wch: 14 },
+            { wch: 12 },
+            { wch: 12 },
+            { wch: 14 },
+            { wch: 14 },
+            { wch: 10 },
+            { wch: 12 }
           ];
 
           XLSX.utils.book_append_sheet(wb, ws, 'Order Costing');
           XLSX.writeFile(wb, `${soNum}_Costing.xlsx`);
         } else {
-          // Native CSV Fallback with BOM for Excel compatibility
           let csvContent = '\uFEFF';
           excelRows.forEach(row => {
             const escaped = row.map(val => {
@@ -1393,7 +1387,7 @@
         alert(`Sales order ${so} saved with calculated conversions!`);
       });
 
-      // Product Master Form Handler
+      // Product Master
       document.getElementById('product-form').addEventListener('submit', (e) => {
         e.preventDefault();
         const p = {
@@ -1433,6 +1427,7 @@
       }
 
       window.addEventListener('DOMContentLoaded', () => {
+        enforceMaxDate();
         resetCostingWorkspace();
         fetchLiveRates();
       });
