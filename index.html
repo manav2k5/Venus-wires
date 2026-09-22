@@ -613,11 +613,10 @@
       <aside class="sidebar">
         <a class="brand" href="#costing" aria-label="Venus Wires home">
           <span class="brand-mark">C</span>
-          <span>Venus Wires </span>
+          <span>Venus Wires</span>
         </a>
         <nav>
           <button class="nav-link active" data-view="costing"><span>▦</span> Sales Costing</button>
-          
           <button class="nav-link" data-view="orders"><span>≡</span> Saved Costings</button>
         </nav>
         <div class="sidebar-note">
@@ -641,7 +640,7 @@
         <!-- COSTING VIEW -->
         <section class="view active" id="costing-view">
           <div class="notice">
-            <span>✦</span> <strong>Active Rules:</strong>  Line Item in multiples of 10 |  
+            <span>✦</span> <strong>Active Book1 Formulas:</strong> Price/kg = Price × FX × (2.20462 if LB) | Tariff/kg = [((Price/kg - Freight)/1.5) × Tariff%] | Conversion/kg = Price/kg - Freight - Tariff - Raw Material - Costs - Duty - Commission
           </div>
           
           <div class="costing-container">
@@ -720,7 +719,7 @@
                       <th style="min-width: 110px;">Other Duties</th>
                       <th style="min-width: 120px;">Raw Material</th>
                       <th style="min-width: 110px;">Commission</th>
-                      <th style="min-width: 140px;">Currency Conversion</th>
+                      <th style="min-width: 140px;">Effective FX</th>
                       <th style="min-width: 130px;">Conversion</th>
                       <th style="min-width: 60px;">Action</th>
                     </tr>
@@ -779,8 +778,6 @@
           </div>
         </section>
 
-       
-
         <!-- SAVED COSTINGS VIEW -->
         <section class="view" id="orders-view">
           <div class="section-title-row">
@@ -830,7 +827,7 @@
     <div id="toast" role="status"></div>
 
     <script>
-      // Updated realistic market baselines (~95.50 for USD)
+      // Realistic spot FX baseline
       const fxRatesToINR = {
         USD: 95.52,
         EUR: 109.57,
@@ -859,18 +856,24 @@
         poDateInput.max = `${year}-${month}-${day}`;
       }
 
-      function getUomMultiplier(uom) {
-        if (uom === 'Ton') return 1000;
-        if (uom === 'Lbs') return 0.45359237;
-        return 1;
+      // Exact Book1 Factor: multiply price by 2.20462 when UOM is Lb
+      function getPriceMultiplierToKg(uom) {
+        if (uom === 'Lbs' || uom === 'LB') return 2.20462;
+        if (uom === 'Ton') return 0.001;
+        return 1.0; // Kg and Piece default
       }
 
-      // Robust live FX fetcher with secondary fallback
+      // Quantity to KG multiplier
+      function getQtyMultiplierToKg(uom) {
+        if (uom === 'Ton') return 1000;
+        if (uom === 'Lbs' || uom === 'LB') return 0.45359237;
+        return 1.0;
+      }
+
       async function fetchLiveRates() {
         const statusEl = document.getElementById('fx-status');
         let fetched = false;
 
-        // Primary API: open.er-api.com
         try {
           const res = await fetch('https://open.er-api.com/v6/latest/USD');
           if (res.ok) {
@@ -888,7 +891,6 @@
           }
         } catch (e) {}
 
-        // Secondary fallback API if primary fails
         if (!fetched) {
           try {
             const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
@@ -928,6 +930,7 @@
         const ocean = parseFloat(document.getElementById('oceanFreight').value) || 0;
         const door = parseFloat(document.getElementById('doorDelivery').value) || 0;
 
+        // Book1 Formula: (ocean * fx / qty) + (door * fx / qty) = (ocean + door) * fx / qty
         state.freightCostPerKg = totalQty > 0 ? ((ocean + door) * fx) / totalQty : 0;
         freightPerKgFormula.textContent = `₹${state.freightCostPerKg.toFixed(2)}`;
 
@@ -952,39 +955,48 @@
         }
       }
 
+      // EXACT BOOK1 FORMULAS
       function computeLineFinancials(line) {
+        // Effective FX Rate: Selected FX rate minus 3 (or 1 for INR)
         const baseRate = fxRatesToINR[line.currency] || 1;
         line.currencyConversion = line.currency === 'INR' ? 1 : Math.max(0, baseRate - 3);
 
         const priceVal = parseFloat(line.price) || 0;
         const surchargeVal = parseFloat(line.surcharge) || 0;
         line.totalPriceForeign = priceVal + surchargeVal;
-        const totalPriceINR = line.totalPriceForeign * line.currencyConversion;
 
-        const multiplier = getUomMultiplier(line.uom);
+        // Book1 M3 formula: Realized Price per KG in INR = (Price + Surcharge) * FX * (2.20462 if LB)
+        const priceMultiplier = getPriceMultiplierToKg(line.uom);
+        const realizedPricePerKgINR = line.totalPriceForeign * line.currencyConversion * priceMultiplier;
+        line.realizedPricePerKgINR = realizedPricePerKgINR;
+
+        // Weight normalization
+        const qtyMultiplier = getQtyMultiplierToKg(line.uom);
         const qtyRaw = parseFloat(line.quantity) || 0;
-        line.qtyKg = qtyRaw * multiplier;
+        line.qtyKg = qtyRaw * qtyMultiplier;
 
+        // Book1 K10 formula: Tariff/kg = [(Realized Price/kg - Freight/kg) / 1.5] * Tariff%
         let calcTariff = 0;
+        const freight = parseFloat(line.freight) || 0;
         if (line.incoterm !== 'DAP') {
-          const netBeforeTariff = Math.max(0, totalPriceINR - (parseFloat(line.freight) || 0));
+          const netBeforeTariff = Math.max(0, realizedPricePerKgINR - freight);
           calcTariff = (netBeforeTariff / 1.5) * ((parseFloat(line.tariff) || 0) / 100);
         }
         line.calculatedTariffINR = calcTariff;
 
+        // Duties and Commission
         let calcDuty = 0;
         if (!['FOB', 'DAP', 'CIF'].includes(line.incoterm)) {
           calcDuty = (parseFloat(line.otherDuties) || 0) / 100;
         }
         line.calculatedDutyINR = calcDuty;
-
         line.calculatedCommissionINR = parseFloat(line.commission) || 0;
 
-        const freight = parseFloat(line.freight) || 0;
+        // Book1 M4 formula: Conversion/kg = Realized Price/kg - Freight - Tariff - Raw Material - Costs - Duty - Commission
         const otherCost = parseFloat(line.otherCosts) || 0;
         const rawMat = parseFloat(line.rawMaterial) || 0;
 
-        line.conversion = totalPriceINR - freight - calcDuty - calcTariff - otherCost - line.calculatedCommissionINR - rawMat;
+        line.conversion = realizedPricePerKgINR - freight - calcTariff - rawMat - otherCost - calcDuty - line.calculatedCommissionINR;
       }
 
       function createNewLine() {
@@ -1204,7 +1216,7 @@
           totalFreight += (parseFloat(line.freight) || 0) * kg;
           totalTariff += (parseFloat(line.calculatedTariffINR) || 0) * kg;
           totalQtyKg += kg;
-          totalLanded += (line.totalPriceForeign * line.currencyConversion) * kg;
+          totalLanded += (line.realizedPricePerKgINR || 0) * kg;
         });
 
         document.getElementById('total-landed').textContent = `₹${totalLanded.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
@@ -1386,45 +1398,6 @@
         }
         alert(`Sales order ${so} saved with calculated conversions!`);
       });
-
-      // Product Master
-      document.getElementById('product-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const p = {
-          id: 'p_' + Date.now(),
-          name: document.getElementById('product-name').value,
-          grade: document.getElementById('product-grade').value,
-          uom: document.getElementById('product-uom').value,
-          raw: parseFloat(document.getElementById('product-raw-rate').value) || 0,
-          conv: parseFloat(document.getElementById('product-conversion-rate').value) || 0,
-          comm: parseFloat(document.getElementById('product-commission-rate').value) || 0,
-          incoterm: document.getElementById('product-incoterm').value,
-          tariff: parseFloat(document.getElementById('product-tariff').value) || 0
-        };
-        state.productsMaster.push(p);
-        renderProductMaster();
-        e.target.reset();
-      });
-
-      function renderProductMaster() {
-        const list = document.getElementById('product-list');
-        list.innerHTML = '';
-        state.productsMaster.forEach(p => {
-          const item = document.createElement('div');
-          item.className = 'product-item';
-          item.innerHTML = `
-            <div>
-              <strong>${p.name} (${p.grade || 'Std'})</strong>
-              <div style="font-size: 0.75rem; color: var(--text-muted);">
-                UOM: ${p.uom} | Raw: ₹${p.raw} | Conv: ₹${p.conv} | Incoterm: ${p.incoterm}
-              </div>
-            </div>
-            <span class="chip">${p.tariff}% Tariff</span>
-          `;
-          list.appendChild(item);
-        });
-        document.getElementById('product-count').textContent = `${state.productsMaster.length} Products`;
-      }
 
       window.addEventListener('DOMContentLoaded', () => {
         enforceMaxDate();
