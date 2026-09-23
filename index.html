@@ -27,584 +27,173 @@
         --font-mono: 'DM Mono', monospace;
       }
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg); color: var(--text-main); height: 100vh; overflow: hidden; }
+      .app-shell { display: grid; grid-template-columns: 260px 1fr; height: 100vh; }
 
-      body {
-        font-family: var(--font-sans);
-        background: var(--bg);
-        color: var(--text-main);
-        height: 100vh;
-        overflow: hidden;
-      }
+      .sidebar { background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 16px; gap: 24px; }
+      .brand { display: flex; align-items: center; gap: 12px; color: var(--text-main); text-decoration: none; font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; }
+      .brand-mark { background: var(--primary); color: #fff; width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; font-size: 0.95rem; }
 
-      .app-shell {
-        display: grid;
-        grid-template-columns: 260px 1fr;
-        height: 100vh;
-      }
+      nav { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+      .nav-link { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: transparent; border: none; border-radius: 6px; color: var(--text-muted); font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-align: left; transition: 0.2s ease; }
+      .nav-link:hover { background: var(--surface-hover); color: var(--text-main); }
+      .nav-link.active { background: rgba(47, 129, 247, 0.15); color: var(--primary); }
 
-      .sidebar {
-        background: var(--surface);
-        border-right: 1px solid var(--border);
-        display: flex;
-        flex-direction: column;
-        padding: 24px 16px;
-        gap: 24px;
-      }
+      .sidebar-note { display: flex; align-items: center; gap: 12px; font-size: 0.8rem; padding: 12px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 8px; }
+      .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
 
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: var(--text-main);
-        text-decoration: none;
-        font-weight: 800;
-        font-size: 1.2rem;
-        letter-spacing: -0.5px;
-      }
+      main { display: flex; flex-direction: column; height: 100vh; overflow-y: auto; }
+      .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 32px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 10; }
+      .eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; color: var(--primary); margin-bottom: 2px; }
+      .topbar h1 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; }
+      .topbar-actions { display: flex; gap: 12px; }
 
-      .brand-mark {
-        background: var(--primary);
-        color: #fff;
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        display: grid;
-        place-items: center;
-        font-size: 0.95rem;
-      }
-
-      nav {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        flex: 1;
-      }
-
-      .nav-link {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 14px;
-        background: transparent;
-        border: none;
-        border-radius: 6px;
-        color: var(--text-muted);
-        font-family: inherit;
-        font-size: 0.9rem;
-        font-weight: 600;
-        cursor: pointer;
-        text-align: left;
-        transition: 0.2s ease;
-      }
-
-      .nav-link:hover {
-        background: var(--surface-hover);
-        color: var(--text-main);
-      }
-
-      .nav-link.active {
-        background: rgba(47, 129, 247, 0.15);
-        color: var(--primary);
-      }
-
-      .sidebar-note {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 0.8rem;
-        padding: 12px;
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-      }
-
-      .status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--accent);
-        box-shadow: 0 0 8px var(--accent);
-      }
-
-      main {
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        overflow-y: auto;
-      }
-
-      .topbar {
+      /* Sheet Access Toggle Bar */
+      .sheet-toggle-bar {
+        background: #11151c;
+        border-bottom: 1px solid var(--border);
+        padding: 10px 32px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 20px 32px;
-        border-bottom: 1px solid var(--border);
-        background: var(--surface);
-        position: sticky;
-        top: 0;
-        z-index: 10;
+        font-size: 0.82rem;
       }
-
-      .eyebrow {
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 1px;
-        color: var(--primary);
-        margin-bottom: 2px;
-      }
-
-      .topbar h1 {
-        font-size: 1.4rem;
-        font-weight: 800;
-        letter-spacing: -0.5px;
-      }
-
-      .topbar-actions {
-        display: flex;
-        gap: 12px;
-      }
-
-      .button {
-        padding: 8px 18px;
-        border-radius: 6px;
-        font-family: inherit;
-        font-size: 0.88rem;
-        font-weight: 600;
-        cursor: pointer;
-        border: 1px solid transparent;
-        transition: 0.15s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .button-primary {
-        background: var(--primary);
-        color: #fff;
-      }
-      .button-primary:hover {
-        background: var(--primary-hover);
-      }
-
-      .button-secondary {
-        background: rgba(47, 129, 247, 0.1);
-        border-color: rgba(47, 129, 247, 0.3);
-        color: var(--primary);
-      }
-      .button-secondary:hover {
-        background: rgba(47, 129, 247, 0.2);
-      }
-
-      .button-quiet {
-        background: transparent;
-        border-color: var(--border);
-        color: var(--text-muted);
-      }
-      .button-quiet:hover {
-        background: var(--surface-hover);
-        color: var(--text-main);
-      }
-
-      .button-excel {
-        background: #1f883d;
-        color: #fff;
-      }
-      .button-excel:hover {
-        background: #2ea043;
-      }
-
-      .view {
-        display: none;
-        padding: 28px 32px;
-      }
-
-      .view.active {
-        display: block;
-      }
-
-      .notice {
-        background: rgba(47, 129, 247, 0.08);
-        border: 1px solid rgba(47, 129, 247, 0.25);
-        padding: 12px 18px;
-        border-radius: 8px;
-        font-size: 0.88rem;
-        color: #a5d6ff;
-        margin-bottom: 24px;
+      .sheet-toggle-left {
         display: flex;
         align-items: center;
         gap: 8px;
-      }
-
-      .costing-container {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-      }
-
-      .header-panels-grid {
-        display: grid;
-        grid-template-columns: 1fr 1.3fr;
-        gap: 20px;
-      }
-
-      .panel {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 20px;
-      }
-
-      .panel-heading {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 18px;
-      }
-
-      .section-kicker {
-        font-size: 0.72rem;
-        font-weight: 700;
-        color: var(--text-muted);
-        letter-spacing: 1px;
-      }
-
-      .panel-heading h2 {
-        font-size: 1.15rem;
-        font-weight: 700;
-      }
-
-      .chip {
-        font-size: 0.75rem;
-        padding: 3px 8px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--border);
-        border-radius: 4px;
         color: var(--text-muted);
       }
-
-      .field-grid {
-        display: grid;
-        gap: 14px;
-      }
-
-      .order-fields {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .freight-fields {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      label {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        font-size: 0.78rem;
-        color: var(--text-muted);
-        font-weight: 600;
-      }
-
-      input, select {
-        background: var(--bg);
-        border: 1px solid var(--border);
-        color: var(--text-main);
-        padding: 8px 10px;
-        border-radius: 6px;
-        font-family: inherit;
-        font-size: 0.88rem;
-        outline: none;
-        transition: 0.15s border-color;
-      }
-
-      input:focus, select:focus {
-        border-color: var(--primary);
-      }
-
-      .formula-result {
-        grid-column: span 3;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: rgba(63, 185, 80, 0.08);
-        border: 1px dashed rgba(63, 185, 80, 0.4);
-        padding: 10px 16px;
-        border-radius: 6px;
-        margin-top: 4px;
-      }
-
-      .formula-result span {
-        font-size: 0.85rem;
-        color: #7ee787;
-      }
-
-      .formula-result strong {
-        font-family: var(--font-mono);
-        font-size: 1.1rem;
-        color: #7ee787;
-      }
-
-      .full-width-panel {
-        padding: 20px 0 0 0;
-        overflow: hidden;
-      }
-
-      .full-width-panel .panel-heading {
-        padding: 0 20px;
-      }
-
-      .table-container {
-        overflow-x: auto;
-        border-top: 1px solid var(--border);
-        max-width: 100%;
-      }
-
-      .costing-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.82rem;
-        white-space: nowrap;
-      }
-
-      .costing-table th {
-        background: #12161c;
-        color: var(--text-muted);
-        font-weight: 600;
-        text-align: left;
-        padding: 12px 10px;
-        border-bottom: 1px solid var(--border);
-        font-size: 0.78rem;
-        letter-spacing: 0.3px;
-      }
-
-      .costing-table td {
-        padding: 8px 8px;
-        border-bottom: 1px solid var(--border);
-        background: var(--surface);
-      }
-
-      .costing-table tr:hover td {
-        background: #19202a;
-      }
-
-      .costing-table input, 
-      .costing-table select {
-        width: 100%;
-        padding: 6px 8px;
-        font-size: 0.82rem;
-        font-family: var(--font-mono);
-      }
-
-      .costing-table select {
-        font-family: var(--font-sans);
-      }
-
-      .costing-table input[disabled],
-      .costing-table input.is-disabled {
-        background: var(--disabled-bg);
-        border-color: var(--disabled-bg);
-        color: var(--disabled-text);
-        cursor: not-allowed;
-      }
-
-      .read-only-cell {
-        background: rgba(255, 255, 255, 0.02) !important;
-        font-weight: 600;
-        color: #7ee787;
-      }
-
-      .conversion-cell {
-        background: rgba(47, 129, 247, 0.05) !important;
-        font-weight: 700;
-        color: var(--primary);
-      }
-
-      .delete-row-btn {
-        background: transparent;
-        border: none;
-        color: var(--danger);
-        font-size: 1.2rem;
-        cursor: pointer;
-        padding: 4px 8px;
-        border-radius: 4px;
-      }
-      .delete-row-btn:hover {
-        background: rgba(248, 81, 73, 0.15);
-      }
-
-      .bottom-summary-grid {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 20px;
-        margin-top: 4px;
-      }
-
-      .summary-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 20px;
-      }
-
-      .summary-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid var(--border);
-        padding-bottom: 12px;
-        margin-bottom: 16px;
-      }
-
-      .summary-top p {
-        font-size: 0.72rem;
-        color: var(--text-muted);
-        font-weight: 700;
-      }
-
-      .summary-top h2 {
-        font-size: 1.15rem;
-      }
-
-      .live-label {
-        display: flex;
+      .sheet-link-btn {
+        display: inline-flex;
         align-items: center;
         gap: 6px;
-        font-size: 0.75rem;
+        color: #7ee787;
+        text-decoration: none;
         font-weight: 700;
-        color: var(--accent);
+        background: rgba(63, 185, 80, 0.1);
+        border: 1px solid rgba(63, 185, 80, 0.3);
+        padding: 5px 12px;
+        border-radius: 6px;
+        transition: 0.15s ease;
+      }
+      .sheet-link-btn:hover {
+        background: rgba(63, 185, 80, 0.2);
+        color: #fff;
       }
 
-      .live-label i {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: var(--accent);
-      }
+      .button { padding: 8px 18px; border-radius: 6px; font-family: inherit; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: 0.15s ease; display: inline-flex; align-items: center; gap: 6px; }
+      .button-primary { background: var(--primary); color: #fff; }
+      .button-primary:hover { background: var(--primary-hover); }
+      .button-secondary { background: rgba(47, 129, 247, 0.1); border-color: rgba(47, 129, 247, 0.3); color: var(--primary); }
+      .button-secondary:hover { background: rgba(47, 129, 247, 0.2); }
+      .button-quiet { background: transparent; border-color: var(--border); color: var(--text-muted); }
+      .button-quiet:hover { background: var(--surface-hover); color: var(--text-main); }
+      .button-excel { background: #1f883d; color: #fff; }
+      .button-excel:hover { background: #2ea043; }
 
-      .summary-metrics-grid {
-        display: grid;
-        grid-template-columns: 1.4fr repeat(4, 1fr);
-        gap: 14px;
-      }
+      .view { display: none; padding: 24px 32px; }
+      .view.active { display: block; }
+      .notice { background: rgba(47, 129, 247, 0.08); border: 1px solid rgba(47, 129, 247, 0.25); padding: 12px 18px; border-radius: 8px; font-size: 0.88rem; color: #a5d6ff; margin-bottom: 24px; display: flex; align-items: center; gap: 8px; }
 
-      .metric-block {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-      }
+      .costing-container { display: flex; flex-direction: column; gap: 24px; }
+      .header-panels-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 20px; }
+      .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+      .panel-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+      .section-kicker { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; }
+      .panel-heading h2 { font-size: 1.15rem; font-weight: 700; }
+      .chip { font-size: 0.75rem; padding: 3px 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 4px; color: var(--text-muted); }
 
-      .metric-block span {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-      }
+      .field-grid { display: grid; gap: 14px; }
+      .order-fields { grid-template-columns: 1fr 1fr; }
+      .freight-fields { grid-template-columns: repeat(3, 1fr); }
 
-      .metric-block strong {
-        font-family: var(--font-mono);
-        font-size: 1.05rem;
-      }
+      label { display: flex; flex-direction: column; gap: 6px; font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
+      input, select { background: var(--bg); border: 1px solid var(--border); color: var(--text-main); padding: 8px 10px; border-radius: 6px; font-family: inherit; font-size: 0.88rem; outline: none; transition: 0.15s border-color; }
+      input:focus, select:focus { border-color: var(--primary); }
 
-      .metric-block.main strong {
-        font-size: 1.4rem;
-        color: var(--primary);
-      }
+      .formula-result { grid-column: span 3; display: flex; justify-content: space-between; align-items: center; background: rgba(63, 185, 80, 0.08); border: 1px dashed rgba(63, 185, 80, 0.4); padding: 10px 16px; border-radius: 6px; margin-top: 4px; }
+      .formula-result span { font-size: 0.85rem; color: #7ee787; }
+      .formula-result strong { font-family: var(--font-mono); font-size: 1.1rem; color: #7ee787; }
 
-      .metric-block.main small {
-        color: var(--text-muted);
-        font-size: 0.75rem;
-      }
+      .full-width-panel { padding: 20px 0 0 0; overflow: hidden; }
+      .full-width-panel .panel-heading { padding: 0 20px; }
+      .table-container { overflow-x: auto; border-top: 1px solid var(--border); max-width: 100%; }
 
-      .upload-card {
-        background: var(--surface);
+      .costing-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; white-space: nowrap; }
+      .costing-table th { background: #12161c; color: var(--text-muted); font-weight: 600; text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--border); font-size: 0.78rem; letter-spacing: 0.3px; }
+      .costing-table td { padding: 8px 8px; border-bottom: 1px solid var(--border); background: var(--surface); }
+      .costing-table tr:hover td { background: #19202a; }
+      .costing-table input, .costing-table select { width: 100%; padding: 6px 8px; font-size: 0.82rem; font-family: var(--font-mono); }
+      .costing-table select { font-family: var(--font-sans); }
+      .costing-table input[disabled], .costing-table input.is-disabled { background: var(--disabled-bg); border-color: var(--disabled-bg); color: var(--disabled-text); cursor: not-allowed; }
+
+      .read-only-cell { background: rgba(255, 255, 255, 0.02) !important; font-weight: 600; color: #7ee787; }
+      .conversion-cell { background: rgba(47, 129, 247, 0.05) !important; font-weight: 700; color: var(--primary); }
+      .delete-row-btn { background: transparent; border: none; color: var(--danger); font-size: 1.2rem; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+      .delete-row-btn:hover { background: rgba(248, 81, 73, 0.15); }
+
+      .bottom-summary-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 4px; }
+      .summary-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+      .summary-top { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px; }
+      .summary-top p { font-size: 0.72rem; color: var(--text-muted); font-weight: 700; }
+      .summary-top h2 { font-size: 1.15rem; }
+
+      .live-label { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 700; color: var(--accent); }
+      .live-label i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+      .summary-metrics-grid { display: grid; grid-template-columns: 1.4fr repeat(4, 1fr); gap: 14px; }
+      .metric-block { display: flex; flex-direction: column; gap: 4px; }
+      .metric-block span { font-size: 0.75rem; color: var(--text-muted); }
+      .metric-block strong { font-family: var(--font-mono); font-size: 1.05rem; }
+      .metric-block.main strong { font-size: 1.4rem; color: var(--primary); }
+      .metric-block.main small { color: var(--text-muted); font-size: 0.75rem; }
+
+      .upload-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+      .upload-card h3 { font-size: 1.15rem; margin: 4px 0 8px 0; }
+      .upload-card p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; }
+
+      dialog { margin: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; color: var(--text-main); max-width: 96vw; width: 1350px; padding: 24px; box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7); }
+      dialog::backdrop { background: rgba(0, 0, 0, 0.8); }
+      .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+      .modal-actions { display: flex; align-items: center; gap: 12px; }
+      .close-button { background: transparent; border: none; color: var(--text-muted); font-size: 1.6rem; cursor: pointer; }
+
+      .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+      .table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.84rem; white-space: nowrap; }
+      .table-wrap th, .table-wrap td { padding: 10px 14px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); text-align: left; }
+      .table-wrap th { background: #11151c; color: var(--text-muted); font-weight: 700; font-size: 0.76rem; letter-spacing: 0.5px; }
+      .table-wrap td { font-family: var(--font-mono); }
+
+      /* Toast Notification */
+      #toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: #1f242c;
         border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
-
-      .upload-card h3 {
-        font-size: 1.15rem;
-        margin: 4px 0 8px 0;
-      }
-
-      .upload-card p {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-bottom: 16px;
-      }
-
-      dialog {
-        margin: auto;
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        color: var(--text-main);
-        max-width: 96vw;
-        width: 1350px;
-        padding: 24px;
-        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
-      }
-
-      dialog::backdrop {
-        background: rgba(0, 0, 0, 0.8);
-      }
-
-      .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 18px;
-      }
-
-      .modal-actions {
+        color: #fff;
+        padding: 14px 20px;
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        font-size: 0.9rem;
         display: flex;
         align-items: center;
         gap: 12px;
+        transform: translateY(100px);
+        opacity: 0;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        z-index: 1000;
       }
-
-      .close-button {
-        background: transparent;
-        border: none;
-        color: var(--text-muted);
-        font-size: 1.6rem;
-        cursor: pointer;
+      #toast.show {
+        transform: translateY(0);
+        opacity: 1;
       }
-
-      .table-wrap {
-        overflow-x: auto;
-        border: 1px solid var(--border);
-        border-radius: 8px;
+      #toast.success {
+        border-left: 4px solid var(--accent);
       }
-
-      .table-wrap table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.84rem;
-        white-space: nowrap;
-      }
-
-      .table-wrap th, .table-wrap td {
-        padding: 10px 14px;
-        border-bottom: 1px solid var(--border);
-        border-right: 1px solid var(--border);
-        text-align: left;
-      }
-
-      .table-wrap th {
-        background: #11151c;
-        color: var(--text-muted);
-        font-weight: 700;
-        font-size: 0.76rem;
-        letter-spacing: 0.5px;
-      }
-
-      .table-wrap td {
-        font-family: var(--font-mono);
+      #toast.error {
+        border-left: 4px solid var(--danger);
       }
     </style>
   </head>
@@ -612,7 +201,7 @@
     <div class="app-shell">
       <aside class="sidebar">
         <a class="brand" href="#costing" aria-label="Venus Wires home">
-          <span class="brand-mark">C</span>
+          <span class="brand-mark">V</span>
           <span>Venus Wires</span>
         </a>
         <nav>
@@ -636,6 +225,17 @@
             <button class="button button-primary" id="save-order">Save Costing</button>
           </div>
         </header>
+
+        <!-- Toggle Bar Directly Below Save Costing -->
+        <div class="sheet-toggle-bar">
+          <div class="sheet-toggle-left">
+            <span>📊 Central Database:</span>
+            <span id="sync-status" style="color: var(--accent);">Ready to sync orders</span>
+          </div>
+          <a class="sheet-link-btn" id="open-sheet-btn" href="#" target="_blank" rel="noopener noreferrer">
+            Open Google Sheet Database ↗
+          </a>
+        </div>
 
         <!-- COSTING VIEW -->
         <section class="view active" id="costing-view">
@@ -724,9 +324,7 @@
                       <th style="min-width: 60px;">Action</th>
                     </tr>
                   </thead>
-                  <tbody id="line-items-body">
-                    <!-- Dynamic Rows -->
-                  </tbody>
+                  <tbody id="line-items-body"></tbody>
                 </table>
               </div>
             </section>
@@ -781,9 +379,9 @@
         <!-- SAVED COSTINGS VIEW -->
         <section class="view" id="orders-view">
           <div class="section-title-row">
-            <div><p class="eyebrow">ORDER ARCHIVE</p><h2>Saved Costings</h2></div>
+            <div><p class="eyebrow">ORDER ARCHIVE</p><h2>Saved Costings History</h2></div>
           </div>
-          <section class="panel">
+          <section class="panel" style="margin-top: 16px;">
             <div id="order-list" class="order-list"></div>
           </section>
         </section>
@@ -824,10 +422,19 @@
       </div>
     </dialog>
 
-    <div id="toast" role="status"></div>
+    <!-- Toast Notification Element -->
+    <div id="toast"></div>
 
     <script>
-      // Realistic spot FX baseline
+      // ==========================================
+      // GOOGLE SHEETS SETUP (UPDATE WITH YOUR LINKS)
+      // ==========================================
+      const GOOGLE_SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyn5bu6FNkeXh4SssRzn64vUT5TaRvpdASqJKfjSUQEfuz4qpurqglUbtWpQK3olK579Q/exec';
+      const GOOGLE_SHEET_VIEW_URL = 'https://docs.google.com/spreadsheets/d/1juQHD5K4S7bF8_1601SBsgvI7kKixtrKyEEDPJebzYg/edit?usp=sharing';
+
+      // Connect Open Sheet link button
+      document.getElementById('open-sheet-btn').href = GOOGLE_SHEET_VIEW_URL;
+
       const fxRatesToINR = {
         USD: 95.52,
         EUR: 109.57,
@@ -838,14 +445,22 @@
 
       const state = {
         freightCostPerKg: 0,
-        lines: [],
-        productsMaster: []
+        lines: []
       };
 
       const PRODUCT_OPTIONS = ['SS Wire', 'SS Bars', 'Nickel Alloys', 'Carbon Alloys', 'Shaft'];
       const UOM_OPTIONS = ['Kg', 'Ton', 'Lbs', 'Piece'];
       const INCOTERM_OPTIONS = ['DDP', 'CIF', 'DAP', 'FOB'];
       const CURRENCY_OPTIONS = ['USD', 'EUR', 'GBP', 'CAD', 'INR'];
+
+      function showNotification(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.className = `show ${type}`;
+        toast.innerHTML = type === 'success' ? `✅ <strong>Success:</strong> ${message}` : `⚠️ <strong>Notice:</strong> ${message}`;
+        setTimeout(() => {
+          toast.className = '';
+        }, 4000);
+      }
 
       function enforceMaxDate() {
         const poDateInput = document.getElementById('poDate');
@@ -856,14 +471,12 @@
         poDateInput.max = `${year}-${month}-${day}`;
       }
 
-      // Exact Book1 Factor: multiply price by 2.20462 when UOM is Lb
       function getPriceMultiplierToKg(uom) {
         if (uom === 'Lbs' || uom === 'LB') return 2.20462;
         if (uom === 'Ton') return 0.001;
-        return 1.0; // Kg and Piece default
+        return 1.0;
       }
 
-      // Quantity to KG multiplier
       function getQtyMultiplierToKg(uom) {
         if (uom === 'Ton') return 1000;
         if (uom === 'Lbs' || uom === 'LB') return 0.45359237;
@@ -930,7 +543,6 @@
         const ocean = parseFloat(document.getElementById('oceanFreight').value) || 0;
         const door = parseFloat(document.getElementById('doorDelivery').value) || 0;
 
-        // Book1 Formula: (ocean * fx / qty) + (door * fx / qty) = (ocean + door) * fx / qty
         state.freightCostPerKg = totalQty > 0 ? ((ocean + door) * fx) / totalQty : 0;
         freightPerKgFormula.textContent = `₹${state.freightCostPerKg.toFixed(2)}`;
 
@@ -955,9 +567,7 @@
         }
       }
 
-      // EXACT BOOK1 FORMULAS
       function computeLineFinancials(line) {
-        // Effective FX Rate: Selected FX rate minus 3 (or 1 for INR)
         const baseRate = fxRatesToINR[line.currency] || 1;
         line.currencyConversion = line.currency === 'INR' ? 1 : Math.max(0, baseRate - 3);
 
@@ -965,17 +575,14 @@
         const surchargeVal = parseFloat(line.surcharge) || 0;
         line.totalPriceForeign = priceVal + surchargeVal;
 
-        // Book1 M3 formula: Realized Price per KG in INR = (Price + Surcharge) * FX * (2.20462 if LB)
         const priceMultiplier = getPriceMultiplierToKg(line.uom);
         const realizedPricePerKgINR = line.totalPriceForeign * line.currencyConversion * priceMultiplier;
         line.realizedPricePerKgINR = realizedPricePerKgINR;
 
-        // Weight normalization
         const qtyMultiplier = getQtyMultiplierToKg(line.uom);
         const qtyRaw = parseFloat(line.quantity) || 0;
         line.qtyKg = qtyRaw * qtyMultiplier;
 
-        // Book1 K10 formula: Tariff/kg = [(Realized Price/kg - Freight/kg) / 1.5] * Tariff%
         let calcTariff = 0;
         const freight = parseFloat(line.freight) || 0;
         if (line.incoterm !== 'DAP') {
@@ -984,7 +591,6 @@
         }
         line.calculatedTariffINR = calcTariff;
 
-        // Duties and Commission
         let calcDuty = 0;
         if (!['FOB', 'DAP', 'CIF'].includes(line.incoterm)) {
           calcDuty = (parseFloat(line.otherDuties) || 0) / 100;
@@ -992,7 +598,6 @@
         line.calculatedDutyINR = calcDuty;
         line.calculatedCommissionINR = parseFloat(line.commission) || 0;
 
-        // Book1 M4 formula: Conversion/kg = Realized Price/kg - Freight - Tariff - Raw Material - Costs - Duty - Commission
         const otherCost = parseFloat(line.otherCosts) || 0;
         const rawMat = parseFloat(line.rawMaterial) || 0;
 
@@ -1059,9 +664,7 @@
 
           tr.innerHTML = `
             <td>${index + 1}</td>
-            <td>
-              <input type="number" step="10" min="10" data-field="lineItemNum" value="${line.lineItemNum}" placeholder="10" style="width: 80px;" title="Must be multiple of 10" />
-            </td>
+            <td><input type="number" step="10" min="10" data-field="lineItemNum" value="${line.lineItemNum}" placeholder="10" style="width: 80px;" /></td>
             <td>
               <select data-field="product">
                 ${PRODUCT_OPTIONS.map(p => `<option value="${p}" ${line.product === p ? 'selected' : ''}>${p}</option>`).join('')}
@@ -1100,19 +703,10 @@
                 <option value="Yes" ${line.tariffIncluded === 'Yes' ? 'selected' : ''}>Yes</option>
               </select>
             </td>
-            <td>
-              <input type="number" step="0.01" data-field="tariff" value="${line.tariff}" placeholder="0.00"
-                ${isDAP ? 'disabled class="is-disabled"' : ''} title="Tariff %" />
-            </td>
-            <td>
-              <input type="number" step="0.01" data-field="freight" value="${Number(line.freight).toFixed(2)}" 
-                ${isFOB ? 'disabled class="is-disabled"' : ''} />
-            </td>
+            <td><input type="number" step="0.01" data-field="tariff" value="${line.tariff}" placeholder="0.00" ${isDAP ? 'disabled class="is-disabled"' : ''} /></td>
+            <td><input type="number" step="0.01" data-field="freight" value="${Number(line.freight).toFixed(2)}" ${isFOB ? 'disabled class="is-disabled"' : ''} /></td>
             <td><input type="number" step="0.01" data-field="otherCosts" value="${line.otherCosts}" placeholder="0.00" /></td>
-            <td>
-              <input type="number" step="0.01" data-field="otherDuties" value="${line.otherDuties}" placeholder="duties / 100"
-                ${isFOB || isDAP || isCIF ? 'disabled class="is-disabled"' : ''} />
-            </td>
+            <td><input type="number" step="0.01" data-field="otherDuties" value="${line.otherDuties}" placeholder="duties / 100" ${isFOB || isDAP || isCIF ? 'disabled class="is-disabled"' : ''} /></td>
             <td><input type="number" step="0.01" data-field="rawMaterial" value="${line.rawMaterial}" placeholder="0.00" /></td>
             <td><input type="number" step="0.01" data-field="commission" value="${line.commission}" placeholder="Flat value" /></td>
             <td class="read-only-cell"><span class="fx-conv-val">₹${line.currencyConversion.toFixed(2)}</span></td>
@@ -1139,8 +733,7 @@
         if (!field) return;
 
         if (field === 'lineItemNum') {
-          let val = parseInt(target.value) || 0;
-          line.lineItemNum = val;
+          line.lineItemNum = parseInt(target.value) || 0;
           return;
         }
 
@@ -1148,11 +741,9 @@
         line[field] = isNumeric ? (target.value === '' ? '' : parseFloat(target.value) || 0) : target.value;
 
         computeLineFinancials(line);
-
         tr.querySelector('.total-price-val').textContent = line.totalPriceForeign.toFixed(2);
         tr.querySelector('.fx-conv-val').textContent = `₹${line.currencyConversion.toFixed(2)}`;
         tr.querySelector('.conversion-val').textContent = `₹${line.conversion.toFixed(2)}`;
-
         recalcSummaries();
       });
 
@@ -1303,21 +894,8 @@
       // Download Tabular Excel (.xlsx)
       document.getElementById('download-excel-btn').addEventListener('click', () => {
         const soNum = document.getElementById('salesOrder').value.trim() || 'SO_Costing';
-        
         const excelRows = [
-          [
-            'Line Item',
-            'Sales Order',
-            'Product Name',
-            'Raw Material',
-            'Conversion',
-            'Freight',
-            'Other Cost',
-            'Commision',
-            'Duty/Tariff',
-            'CURRENCY',
-            'REMARKS'
-          ]
+          ['Line Item', 'Sales Order', 'Product Name', 'Raw Material', 'Conversion', 'Freight', 'Other Cost', 'Commision', 'Duty/Tariff', 'CURRENCY', 'REMARKS']
         ];
 
         state.lines.forEach((l) => {
@@ -1343,66 +921,125 @@
         if (window.XLSX) {
           const wb = XLSX.utils.book_new();
           const ws = XLSX.utils.aoa_to_sheet(excelRows);
-
           ws['!cols'] = [
-            { wch: 12 },
-            { wch: 16 },
-            { wch: 34 },
-            { wch: 14 },
-            { wch: 14 },
-            { wch: 12 },
-            { wch: 12 },
-            { wch: 14 },
-            { wch: 14 },
-            { wch: 10 },
-            { wch: 12 }
+            { wch: 12 }, { wch: 16 }, { wch: 34 }, { wch: 14 }, { wch: 14 },
+            { wch: 12 }, { wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 10 }, { wch: 12 }
           ];
-
           XLSX.utils.book_append_sheet(wb, ws, 'Order Costing');
           XLSX.writeFile(wb, `${soNum}_Costing.xlsx`);
-        } else {
-          let csvContent = '\uFEFF';
-          excelRows.forEach(row => {
-            const escaped = row.map(val => {
-              const str = String(val).replace(/"/g, '""');
-              return `"${str}"`;
-            });
-            csvContent += escaped.join(',') + '\r\n';
-          });
-
-          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-          const link = document.createElement('a');
-          link.href = URL.createObjectURL(blob);
-          link.setAttribute('download', `${soNum}_Costing.csv`);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
         }
       });
 
-      // Navigation
+      // ==========================================
+      // SAVE COSTING (GOOGLE SHEETS + NOTIFICATIONS)
+      // ==========================================
+      document.getElementById('save-order').addEventListener('click', async () => {
+        const so = document.getElementById('salesOrder').value.trim();
+        const cust = document.getElementById('customer').value.trim();
+
+        if (!so) {
+          showNotification('Please enter a Sales Order number before saving.', 'error');
+          return;
+        }
+
+        const saveBtn = document.getElementById('save-order');
+        const syncStatus = document.getElementById('sync-status');
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+        syncStatus.textContent = 'Syncing order...';
+        syncStatus.style.color = 'var(--primary)';
+
+        const payload = {
+          salesOrder: so,
+          purchaseOrder: document.getElementById('purchaseOrder').value.trim(),
+          poDate: document.getElementById('poDate').value,
+          customer: cust,
+          lines: state.lines.map(l => ({
+            lineItemNum: l.lineItemNum || 10,
+            productName: `${l.product} (${l.grade || 'Std'} ${l.size || ''}) - ${l.quantity || 0} ${l.uom}`,
+            rawMaterial: (parseFloat(l.rawMaterial) || 0).toFixed(2),
+            conversion: l.conversion.toFixed(2),
+            freight: (parseFloat(l.freight) || 0).toFixed(2),
+            otherCosts: (parseFloat(l.otherCosts) || 0).toFixed(2),
+            commission: l.calculatedCommissionINR.toFixed(2),
+            dutyTariff: (l.calculatedDutyINR + l.calculatedTariffINR).toFixed(2),
+            currency: l.currency,
+            remarks: 'done'
+          }))
+        };
+
+        // Save local backup immediately
+        const savedHistory = JSON.parse(localStorage.getItem('venus_wires_orders') || '[]');
+        savedHistory.unshift({ ...payload, timestamp: new Date().toLocaleString() });
+        localStorage.setItem('venus_wires_orders', JSON.stringify(savedHistory));
+        renderOrderHistory();
+
+        // Push to Google Sheets Webhook
+        try {
+          if (!GOOGLE_SHEET_WEBHOOK_URL.includes('AKfycb')) {
+            showNotification(`Order saved locally! Please configure your Google Sheet webhook URL in index.html to sync online.`, 'error');
+            syncStatus.textContent = 'Local only (Webhook unconfigured)';
+            syncStatus.style.color = 'var(--danger)';
+          } else {
+            await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+              method: 'POST',
+              mode: 'no-cors',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            showNotification(`Order ${so} saved & logged to Google Sheets!`, 'success');
+            syncStatus.textContent = `Last order synced: ${so} (${new Date().toLocaleTimeString()})`;
+            syncStatus.style.color = 'var(--accent)';
+          }
+        } catch (err) {
+          console.error(err);
+          showNotification(`Saved to local history, but Google Sheet sync failed: ${err.message}`, 'error');
+          syncStatus.textContent = 'Sync error occurred';
+          syncStatus.style.color = 'var(--danger)';
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save Costing';
+        }
+      });
+
+      // Render Saved Costings View
+      function renderOrderHistory() {
+        const list = document.getElementById('order-list');
+        const history = JSON.parse(localStorage.getItem('venus_wires_orders') || '[]');
+        if (history.length === 0) {
+          list.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">No orders saved yet.</p>';
+          return;
+        }
+
+        list.innerHTML = history.map(order => `
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 14px 18px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong>${order.salesOrder}</strong> — <span style="color: var(--text-muted);">${order.customer || 'No Customer'}</span>
+              <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 4px;">
+                ${order.lines.length} Line Items | Date: ${order.poDate || 'N/A'} | Saved: ${order.timestamp}
+              </div>
+            </div>
+            <span class="chip" style="color: var(--accent); border-color: rgba(63, 185, 80, 0.4);">Logged</span>
+          </div>
+        `).join('');
+      }
+
+      // View switching
       document.querySelectorAll('.nav-link').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
           document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
           btn.classList.add('active');
           document.getElementById(`${btn.dataset.view}-view`).classList.add('active');
+          if (btn.dataset.view === 'orders') renderOrderHistory();
         });
-      });
-
-      document.getElementById('save-order').addEventListener('click', () => {
-        const so = document.getElementById('salesOrder').value.trim();
-        if (!so) {
-          alert('Please enter a Sales Order number before saving.');
-          return;
-        }
-        alert(`Sales order ${so} saved with calculated conversions!`);
       });
 
       window.addEventListener('DOMContentLoaded', () => {
         enforceMaxDate();
         resetCostingWorkspace();
         fetchLiveRates();
+        renderOrderHistory();
       });
     </script>
   </body>
