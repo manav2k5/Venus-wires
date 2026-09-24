@@ -49,39 +49,10 @@
       .topbar h1 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; }
       .topbar-actions { display: flex; gap: 12px; }
 
-      /* Sheet Access Toggle Bar */
-      .sheet-toggle-bar {
-        background: #11151c;
-        border-bottom: 1px solid var(--border);
-        padding: 10px 32px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.82rem;
-      }
-      .sheet-toggle-left {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--text-muted);
-      }
-      .sheet-link-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        color: #7ee787;
-        text-decoration: none;
-        font-weight: 700;
-        background: rgba(63, 185, 80, 0.1);
-        border: 1px solid rgba(63, 185, 80, 0.3);
-        padding: 5px 12px;
-        border-radius: 6px;
-        transition: 0.15s ease;
-      }
-      .sheet-link-btn:hover {
-        background: rgba(63, 185, 80, 0.2);
-        color: #fff;
-      }
+      .sheet-toggle-bar { background: #11151c; border-bottom: 1px solid var(--border); padding: 10px 32px; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; }
+      .sheet-toggle-left { display: flex; align-items: center; gap: 8px; color: var(--text-muted); }
+      .sheet-link-btn { display: inline-flex; align-items: center; gap: 6px; color: #7ee787; text-decoration: none; font-weight: 700; background: rgba(63, 185, 80, 0.1); border: 1px solid rgba(63, 185, 80, 0.3); padding: 5px 12px; border-radius: 6px; transition: 0.15s ease; }
+      .sheet-link-btn:hover { background: rgba(63, 185, 80, 0.2); color: #fff; }
 
       .button { padding: 8px 18px; border-radius: 6px; font-family: inherit; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: 0.15s ease; display: inline-flex; align-items: center; gap: 6px; }
       .button-primary { background: var(--primary); color: #fff; }
@@ -112,6 +83,31 @@
       label { display: flex; flex-direction: column; gap: 6px; font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
       input, select { background: var(--bg); border: 1px solid var(--border); color: var(--text-main); padding: 8px 10px; border-radius: 6px; font-family: inherit; font-size: 0.88rem; outline: none; transition: 0.15s border-color; }
       input:focus, select:focus { border-color: var(--primary); }
+
+      /* Inline UOM Input Group preserving exact 3-column layout */
+      .inline-uom-group {
+        display: flex;
+        align-items: center;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .inline-uom-group input {
+        border: none;
+        background: transparent;
+        flex: 1;
+        min-width: 0;
+        padding: 8px 10px;
+      }
+      .inline-uom-group select {
+        border: none;
+        border-left: 1px solid var(--border);
+        background: rgba(255,255,255,0.03);
+        padding: 8px 8px;
+        cursor: pointer;
+        width: 75px;
+      }
 
       .formula-result { grid-column: span 3; display: flex; justify-content: space-between; align-items: center; background: rgba(63, 185, 80, 0.08); border: 1px dashed rgba(63, 185, 80, 0.4); padding: 10px 16px; border-radius: 6px; margin-top: 4px; }
       .formula-result span { font-size: 0.85rem; color: #7ee787; }
@@ -165,36 +161,10 @@
       .table-wrap th { background: #11151c; color: var(--text-muted); font-weight: 700; font-size: 0.76rem; letter-spacing: 0.5px; }
       .table-wrap td { font-family: var(--font-mono); }
 
-      /* Toast Notification */
-      #toast {
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        background: #1f242c;
-        border: 1px solid var(--border);
-        color: #fff;
-        padding: 14px 20px;
-        border-radius: 8px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        transform: translateY(100px);
-        opacity: 0;
-        transition: transform 0.3s ease, opacity 0.3s ease;
-        z-index: 1000;
-      }
-      #toast.show {
-        transform: translateY(0);
-        opacity: 1;
-      }
-      #toast.success {
-        border-left: 4px solid var(--accent);
-      }
-      #toast.error {
-        border-left: 4px solid var(--danger);
-      }
+      #toast { position: fixed; bottom: 24px; right: 24px; background: #1f242c; border: 1px solid var(--border); color: #fff; padding: 14px 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); font-size: 0.9rem; display: flex; align-items: center; gap: 12px; transform: translateY(100px); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; z-index: 1000; }
+      #toast.show { transform: translateY(0); opacity: 1; }
+      #toast.success { border-left: 4px solid var(--accent); }
+      #toast.error { border-left: 4px solid var(--danger); }
     </style>
   </head>
   <body>
@@ -240,7 +210,7 @@
         <!-- COSTING VIEW -->
         <section class="view active" id="costing-view">
           <div class="notice">
-            <span>✦</span> <strong>Active Book1 Formulas:</strong> Price/kg = Price × FX × (2.20462 if LB) | Tariff/kg = [((Price/kg - Freight)/1.5) × Tariff%] | Conversion/kg = Price/kg - Freight - Tariff - Raw Material - Costs - Duty - Commission
+            <span>✦</span> <strong>Active Rules:</strong> Sales Order must be exactly 10 digits | Total Order Qty converts to KG automatically | Product, Grade & Size are recorded separately in Sheets
           </div>
           
           <div class="costing-container">
@@ -251,20 +221,32 @@
                   <span class="chip">Required fields *</span>
                 </div>
                 <div class="field-grid order-fields">
-                  <label>Sales Order #*<input id="salesOrder" placeholder="e.g. SO-2026-001" value="" required /></label>
+                  <label>Sales Order #* (10 Digits)
+                    <input id="salesOrder" placeholder="10-digit number" maxlength="10" required />
+                  </label>
                   <label>Purchase Order #<input id="purchaseOrder" placeholder="e.g. PO-1084" value="" /></label>
                   <label>PO Date<input id="poDate" type="date" value="" /></label>
                   <label>Customer Name*<input id="customer" placeholder="Customer name" value="" required /></label>
                 </div>
               </section>
 
+              <!-- FREIGHT ALLOCATION (EXACT 3-COLUMN LAYOUT WITH INLINE UOM) -->
               <section class="panel freight-panel">
                 <div class="panel-heading">
                   <div><p class="section-kicker">02</p><h2>Freight Allocation</h2></div>
                   <span class="chip">Cost per kg</span>
                 </div>
                 <div class="field-grid freight-fields">
-                  <label>Total Order Qty (kg)*<input id="orderQuantity" type="number" min="0" step="0.01" value="" placeholder="0.00" /></label>
+                  <label>Total Order Qty*
+                    <div class="inline-uom-group">
+                      <input id="orderQuantity" type="number" min="0" step="0.01" value="" placeholder="0.00" />
+                      <select id="orderQuantityUom" title="Order Quantity UOM">
+                        <option value="Kg">Kg</option>
+                        <option value="Ton">Ton</option>
+                        <option value="Lbs">Lbs</option>
+                      </select>
+                    </div>
+                  </label>
                   <label>Freight Currency
                     <select id="freightCurrency">
                       <option value="USD">USD</option>
@@ -278,8 +260,8 @@
                   <label>Ocean Freight<input id="oceanFreight" type="number" min="0" step="0.01" value="" placeholder="0.00" /></label>
                   <label>Door Delivery<input id="doorDelivery" type="number" min="0" step="0.01" value="" placeholder="0.00" /></label>
                   <div class="formula-result">
-                    <span>Freight / kg (INR)</span>
-                    <strong id="freight-formula-result">₹0.00</strong>
+                    <span id="freight-norm-display">Weight: 0.00 kg</span>
+                    <span>Freight / kg: <strong id="freight-formula-result">₹0.00</strong></span>
                   </div>
                 </div>
               </section>
@@ -404,9 +386,8 @@
         <table id="preview-excel-table">
           <thead>
             <tr>
-              <th>Line Item</th>
               <th>Sales Order</th>
-              <th>Product Name</th>
+              <th>Line Item</th>
               <th>Raw Material</th>
               <th>Conversion</th>
               <th>Freight</th>
@@ -414,6 +395,7 @@
               <th>Commision</th>
               <th>Duty/Tariff</th>
               <th>CURRENCY</th>
+              <th>CONVERSION</th>
               <th>REMARKS</th>
             </tr>
           </thead>
@@ -422,17 +404,15 @@
       </div>
     </dialog>
 
-    <!-- Toast Notification Element -->
     <div id="toast"></div>
 
     <script>
       // ==========================================
-      // GOOGLE SHEETS SETUP (UPDATE WITH YOUR LINKS)
+      // GOOGLE SHEETS WEBHOOK & SHEET VIEW URL
       // ==========================================
-      const GOOGLE_SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyn5bu6FNkeXh4SssRzn64vUT5TaRvpdASqJKfjSUQEfuz4qpurqglUbtWpQK3olK579Q/exec';
+      const GOOGLE_SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbw3Li7jaMmOOmdgkUTLx3gjf8UJRHZMHe8IKZJchbp6jxPeaKoLivlW5J45ZibnwOCsfA/exec';
       const GOOGLE_SHEET_VIEW_URL = 'https://docs.google.com/spreadsheets/d/1juQHD5K4S7bF8_1601SBsgvI7kKixtrKyEEDPJebzYg/edit?usp=sharing';
 
-      // Connect Open Sheet link button
       document.getElementById('open-sheet-btn').href = GOOGLE_SHEET_VIEW_URL;
 
       const fxRatesToINR = {
@@ -445,6 +425,7 @@
 
       const state = {
         freightCostPerKg: 0,
+        orderQuantityKg: 0,
         lines: []
       };
 
@@ -453,13 +434,18 @@
       const INCOTERM_OPTIONS = ['DDP', 'CIF', 'DAP', 'FOB'];
       const CURRENCY_OPTIONS = ['USD', 'EUR', 'GBP', 'CAD', 'INR'];
 
+      const salesOrderInput = document.getElementById('salesOrder');
+      salesOrderInput.addEventListener('input', (e) => {
+        let val = e.target.value.replace(/\D/g, '');
+        if (val.length > 10) val = val.slice(0, 10);
+        e.target.value = val;
+      });
+
       function showNotification(message, type = 'success') {
         const toast = document.getElementById('toast');
         toast.className = `show ${type}`;
         toast.innerHTML = type === 'success' ? `✅ <strong>Success:</strong> ${message}` : `⚠️ <strong>Notice:</strong> ${message}`;
-        setTimeout(() => {
-          toast.className = '';
-        }, 4000);
+        setTimeout(() => { toast.className = ''; }, 4500);
       }
 
       function enforceMaxDate() {
@@ -536,15 +522,23 @@
       const lineItemsBody = document.getElementById('line-items-body');
       const addLineBtn = document.getElementById('add-line');
       const freightPerKgFormula = document.getElementById('freight-formula-result');
+      const freightNormDisplay = document.getElementById('freight-norm-display');
 
+      // Requirement 2: Calculate freight after converting entered quantity to KG
       function calculateFreightPerKg() {
-        const totalQty = parseFloat(document.getElementById('orderQuantity').value) || 0;
+        const rawQty = parseFloat(document.getElementById('orderQuantity').value) || 0;
+        const uom = document.getElementById('orderQuantityUom').value;
+        const multiplier = getQtyMultiplierToKg(uom);
+        const totalQtyKg = rawQty * multiplier;
+        state.orderQuantityKg = totalQtyKg;
+
         const fx = parseFloat(document.getElementById('freightFx').value) || 0;
         const ocean = parseFloat(document.getElementById('oceanFreight').value) || 0;
         const door = parseFloat(document.getElementById('doorDelivery').value) || 0;
 
-        state.freightCostPerKg = totalQty > 0 ? ((ocean + door) * fx) / totalQty : 0;
+        state.freightCostPerKg = totalQtyKg > 0 ? ((ocean + door) * fx) / totalQtyKg : 0;
         freightPerKgFormula.textContent = `₹${state.freightCostPerKg.toFixed(2)}`;
+        freightNormDisplay.textContent = `Weight: ${totalQtyKg.toLocaleString('en-IN', { maximumFractionDigits: 2 })} kg`;
 
         state.lines.forEach(line => applyIncotermRules(line));
         recalcAllLines();
@@ -775,6 +769,8 @@
           computeLineFinancials(line);
           renderLines();
           recalcSummaries();
+        } else if (target.dataset.field === 'product') {
+          line.product = target.value;
         } else if (target.dataset.field === 'currency' || target.dataset.field === 'uom') {
           line[target.dataset.field] = target.value;
           computeLineFinancials(line);
@@ -821,8 +817,9 @@
         document.getElementById('summary-order').textContent = soNum || 'Draft Order';
       }
 
-      ['orderQuantity', 'freightFx', 'oceanFreight', 'doorDelivery'].forEach(id => {
+      ['orderQuantity', 'orderQuantityUom', 'freightFx', 'oceanFreight', 'doorDelivery'].forEach(id => {
         document.getElementById(id).addEventListener('input', calculateFreightPerKg);
+        document.getElementById(id).addEventListener('change', calculateFreightPerKg);
       });
 
       document.getElementById('freightCurrency').addEventListener('change', (e) => {
@@ -840,12 +837,15 @@
         document.getElementById('customer').value = '';
 
         document.getElementById('orderQuantity').value = '';
+        document.getElementById('orderQuantityUom').value = 'Kg';
         document.getElementById('freightCurrency').value = 'USD';
         document.getElementById('freightFx').value = (fxRatesToINR['USD'] || 95.52).toFixed(2);
         document.getElementById('oceanFreight').value = '';
         document.getElementById('doorDelivery').value = '';
         state.freightCostPerKg = 0;
+        state.orderQuantityKg = 0;
         freightPerKgFormula.textContent = '₹0.00';
+        freightNormDisplay.textContent = 'Weight: 0.00 kg';
 
         state.lines = [];
         createNewLine();
@@ -862,19 +862,17 @@
       const modal = document.getElementById('upload-modal');
       document.getElementById('show-upload').addEventListener('click', () => {
         const uploadBody = document.getElementById('upload-body');
-        const soNum = document.getElementById('salesOrder').value.trim() || 'SO-DRAFT';
+        const soNum = document.getElementById('salesOrder').value.trim() || '0000000000';
         uploadBody.innerHTML = '';
 
         state.lines.forEach((l) => {
           const tr = document.createElement('tr');
           const lineItemNum = l.lineItemNum || 10;
-          const productDetail = `${l.product} (${l.grade || 'Std'} ${l.size || ''}) - ${l.quantity || 0} ${l.uom}`;
           const combinedDutyTariff = (l.calculatedDutyINR + l.calculatedTariffINR).toFixed(2);
 
           tr.innerHTML = `
-            <td>${lineItemNum}</td>
             <td>${soNum}</td>
-            <td>${productDetail}</td>
+            <td>${lineItemNum}</td>
             <td>₹${(parseFloat(l.rawMaterial) || 0).toFixed(2)}</td>
             <td><strong>₹${l.conversion.toFixed(2)}</strong></td>
             <td>₹${(parseFloat(l.freight) || 0).toFixed(2)}</td>
@@ -882,6 +880,7 @@
             <td>₹${l.calculatedCommissionINR.toFixed(2)}</td>
             <td>₹${combinedDutyTariff}</td>
             <td>${l.currency}</td>
+            <td>₹${l.currencyConversion.toFixed(2)}</td>
             <td>done</td>
           `;
           uploadBody.appendChild(tr);
@@ -893,20 +892,30 @@
 
       // Download Tabular Excel (.xlsx)
       document.getElementById('download-excel-btn').addEventListener('click', () => {
-        const soNum = document.getElementById('salesOrder').value.trim() || 'SO_Costing';
+        const soNum = document.getElementById('salesOrder').value.trim() || 'Costing';
         const excelRows = [
-          ['Line Item', 'Sales Order', 'Product Name', 'Raw Material', 'Conversion', 'Freight', 'Other Cost', 'Commision', 'Duty/Tariff', 'CURRENCY', 'REMARKS']
+          [
+            'Sales Order',
+            'Line Item',
+            'Raw Material',
+            'Conversion',
+            'Freight',
+            'Other Cost',
+            'Commision',
+            'Duty/Tariff',
+            'CURRENCY',
+            'CONVERSION',
+            'REMARKS'
+          ]
         ];
 
         state.lines.forEach((l) => {
           const lineItemNum = l.lineItemNum || 10;
-          const productDetail = `${l.product} (${l.grade || 'Std'} ${l.size || ''}) - ${l.quantity || 0} ${l.uom}`;
           const combinedDutyTariff = Number((l.calculatedDutyINR + l.calculatedTariffINR).toFixed(2));
 
           excelRows.push([
-            lineItemNum,
             soNum,
-            productDetail,
+            lineItemNum,
             Number((parseFloat(l.rawMaterial) || 0).toFixed(2)),
             Number(l.conversion.toFixed(2)),
             Number((parseFloat(l.freight) || 0).toFixed(2)),
@@ -914,6 +923,7 @@
             Number(l.calculatedCommissionINR.toFixed(2)),
             combinedDutyTariff,
             l.currency,
+            Number(l.currencyConversion.toFixed(2)),
             'done'
           ]);
         });
@@ -922,23 +932,27 @@
           const wb = XLSX.utils.book_new();
           const ws = XLSX.utils.aoa_to_sheet(excelRows);
           ws['!cols'] = [
-            { wch: 12 }, { wch: 16 }, { wch: 34 }, { wch: 14 }, { wch: 14 },
-            { wch: 12 }, { wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 10 }, { wch: 12 }
+            { wch: 16 }, { wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 12 },
+            { wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 10 }, { wch: 14 }, { wch: 12 }
           ];
           XLSX.utils.book_append_sheet(wb, ws, 'Order Costing');
           XLSX.writeFile(wb, `${soNum}_Costing.xlsx`);
         }
       });
 
-      // ==========================================
-      // SAVE COSTING (GOOGLE SHEETS + NOTIFICATIONS)
-      // ==========================================
+      // Requirement 1 & 3: Validated Save to Google Sheets with separated Product, Grade, Size and verified response
       document.getElementById('save-order').addEventListener('click', async () => {
         const so = document.getElementById('salesOrder').value.trim();
         const cust = document.getElementById('customer').value.trim();
 
-        if (!so) {
-          showNotification('Please enter a Sales Order number before saving.', 'error');
+        if (!so || so.length !== 10) {
+          showNotification('Sales Order # must be exactly 10 digits (e.g. 0010023456).', 'error');
+          salesOrderInput.focus();
+          return;
+        }
+
+        if (!cust) {
+          showNotification('Please enter the Customer Name.', 'error');
           return;
         }
 
@@ -949,51 +963,94 @@
         syncStatus.textContent = 'Syncing order...';
         syncStatus.style.color = 'var(--primary)';
 
+        // Harvest rows directly from DOM table ensuring Product, Grade, and Size are accurately split
+        const rowElements = document.querySelectorAll('#line-items-body tr');
+        const harvestedLines = [];
+
+        rowElements.forEach((tr) => {
+          const lineId = tr.dataset.id;
+          const stateLine = state.lines.find(l => l.id === lineId) || {};
+
+          const productSelect = tr.querySelector('[data-field="product"]');
+          const gradeInput = tr.querySelector('[data-field="grade"]');
+          const sizeInput = tr.querySelector('[data-field="size"]');
+          const qtyInput = tr.querySelector('[data-field="quantity"]');
+          const uomSelect = tr.querySelector('[data-field="uom"]');
+
+          const prod = (productSelect ? productSelect.value : stateLine.product) || 'SS Wire';
+          const grade = (gradeInput ? gradeInput.value.trim() : stateLine.grade) || '-';
+          const size = (sizeInput ? sizeInput.value.trim() : stateLine.size) || '-';
+          const qty = (qtyInput ? parseFloat(qtyInput.value) : stateLine.quantity) || 0;
+          const uom = (uomSelect ? uomSelect.value : stateLine.uom) || 'Kg';
+
+          harvestedLines.push({
+            lineItemNum: stateLine.lineItemNum || 10,
+            product: prod,
+            grade: grade,
+            size: size,
+            quantity: qty,
+            uom: uom,
+            rawMaterial: (parseFloat(stateLine.rawMaterial) || 0).toFixed(2),
+            conversion: Number(stateLine.conversion || 0).toFixed(2),
+            freight: (parseFloat(stateLine.freight) || 0).toFixed(2),
+            otherCosts: (parseFloat(stateLine.otherCosts) || 0).toFixed(2),
+            commission: (parseFloat(stateLine.commission) || 0).toFixed(2),
+            dutyTariff: ((parseFloat(stateLine.calculatedDutyINR) || 0) + (parseFloat(stateLine.calculatedTariffINR) || 0)).toFixed(2),
+            currency: stateLine.currency || 'USD'
+          });
+        });
+
         const payload = {
           salesOrder: so,
-          purchaseOrder: document.getElementById('purchaseOrder').value.trim(),
-          poDate: document.getElementById('poDate').value,
+          purchaseOrder: document.getElementById('purchaseOrder').value.trim() || '-',
+          poDate: document.getElementById('poDate').value || '-',
           customer: cust,
-          lines: state.lines.map(l => ({
-            lineItemNum: l.lineItemNum || 10,
-            productName: `${l.product} (${l.grade || 'Std'} ${l.size || ''}) - ${l.quantity || 0} ${l.uom}`,
-            rawMaterial: (parseFloat(l.rawMaterial) || 0).toFixed(2),
-            conversion: l.conversion.toFixed(2),
-            freight: (parseFloat(l.freight) || 0).toFixed(2),
-            otherCosts: (parseFloat(l.otherCosts) || 0).toFixed(2),
-            commission: l.calculatedCommissionINR.toFixed(2),
-            dutyTariff: (l.calculatedDutyINR + l.calculatedTariffINR).toFixed(2),
-            currency: l.currency,
-            remarks: 'done'
-          }))
+          freightDetails: {
+            orderQuantityKg: state.orderQuantityKg || 0,
+            oceanFreight: parseFloat(document.getElementById('oceanFreight').value) || 0,
+            doorDelivery: parseFloat(document.getElementById('doorDelivery').value) || 0,
+            freightFx: parseFloat(document.getElementById('freightFx').value) || 0,
+            freightCurrency: document.getElementById('freightCurrency').value || 'USD'
+          },
+          lines: harvestedLines
         };
 
-        // Save local backup immediately
+        // Local storage backup
         const savedHistory = JSON.parse(localStorage.getItem('venus_wires_orders') || '[]');
         savedHistory.unshift({ ...payload, timestamp: new Date().toLocaleString() });
         localStorage.setItem('venus_wires_orders', JSON.stringify(savedHistory));
         renderOrderHistory();
 
-        // Push to Google Sheets Webhook
+        // Push to Google Sheets Webhook with authentic verification
         try {
           if (!GOOGLE_SHEET_WEBHOOK_URL.includes('AKfycb')) {
-            showNotification(`Order saved locally! Please configure your Google Sheet webhook URL in index.html to sync online.`, 'error');
-            syncStatus.textContent = 'Local only (Webhook unconfigured)';
+            showNotification(`Webhook URL not configured in index.html! Order ${so} saved to local archive only.`, 'error');
+            syncStatus.textContent = 'Local only (Webhook needed)';
             syncStatus.style.color = 'var(--danger)';
           } else {
-            await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+            // Send as text/plain to avoid CORS preflight, and verify response
+            const res = await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
               method: 'POST',
-              mode: 'no-cors',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 'Content-Type': 'text/plain;charset=utf-8' },
               body: JSON.stringify(payload)
             });
-            showNotification(`Order ${so} saved & logged to Google Sheets!`, 'success');
-            syncStatus.textContent = `Last order synced: ${so} (${new Date().toLocaleTimeString()})`;
-            syncStatus.style.color = 'var(--accent)';
+
+            if (res.ok) {
+              const result = await res.json();
+              if (result.status === 'success') {
+                showNotification(`Order ${so} saved & logged to Google Sheets!`, 'success');
+                syncStatus.textContent = `Last synced: ${so} (${new Date().toLocaleTimeString()})`;
+                syncStatus.style.color = 'var(--accent)';
+              } else {
+                throw new Error(result.message || 'Apps Script execution failed');
+              }
+            } else {
+              throw new Error(`HTTP Error ${res.status}`);
+            }
           }
         } catch (err) {
           console.error(err);
-          showNotification(`Saved to local history, but Google Sheet sync failed: ${err.message}`, 'error');
+          showNotification(`Saved locally, but Google Sheet failed: ${err.message}`, 'error');
           syncStatus.textContent = 'Sync error occurred';
           syncStatus.style.color = 'var(--danger)';
         } finally {
@@ -1002,7 +1059,6 @@
         }
       });
 
-      // Render Saved Costings View
       function renderOrderHistory() {
         const list = document.getElementById('order-list');
         const history = JSON.parse(localStorage.getItem('venus_wires_orders') || '[]');
@@ -1014,7 +1070,7 @@
         list.innerHTML = history.map(order => `
           <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 14px 18px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
             <div>
-              <strong>${order.salesOrder}</strong> — <span style="color: var(--text-muted);">${order.customer || 'No Customer'}</span>
+              <strong>SO #${order.salesOrder}</strong> — <span style="color: var(--text-muted);">${order.customer || 'No Customer'}</span>
               <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 4px;">
                 ${order.lines.length} Line Items | Date: ${order.poDate || 'N/A'} | Saved: ${order.timestamp}
               </div>
@@ -1024,7 +1080,6 @@
         `).join('');
       }
 
-      // View switching
       document.querySelectorAll('.nav-link').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
